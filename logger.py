@@ -3,9 +3,9 @@ import logging
 logger = logging.getLogger()
 
 
-def _log(message, context="Global".center(22, '='), level=logging.INFO):
+def _log(message: str, context: str = "Global", level: int = logging.INFO) -> None:
     for line in message.split('\n'):
-        logger.log(level, '[{}] {}'.format(str(context).center(22, '='), line))
+        logger.log(level, f"[{context.center(22, '=')}] {line}")
 
 
 def log(*args, **kwargs):

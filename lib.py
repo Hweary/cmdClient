@@ -1,12 +1,13 @@
 import re
+from typing import Optional
 
 
 class SafeCancellation(Exception):
-    default_msg = None
+    default_msg: Optional[str] = None
 
-    def __init__(self, msg=None, details=None):
-        self.msg = msg or self.default_msg
-        self.details = details or self.msg
+    def __init__(self, msg: Optional[str] = None, details: Optional[str] = None) -> None:
+        self.msg: Optional[str] = msg or self.default_msg
+        self.details: Optional[str] = details or self.msg
 
 
 class UserCancelled(SafeCancellation):
@@ -24,51 +25,50 @@ class InvalidContext(Exception):
     pass
 
 
-def sterilise_content(content):
+def sterilise_content(content: str) -> str:
     """
     Sterilse everyone and here mentions in the provided string.
-    Specifically, adds a zer width space after the `@` symbol
-    when such a ping is detected.
+    Specifically, adds a zero width space after the `@` symbol.
 
     Parameters
     ----------
     content: str
-        String to sterilise
-
-    Returns: str
-        Sterilsed string.
+        String to sterilise.
     """
     content = content.replace("@everyone", "@​everyone")
     content = content.replace("@here", "@​here")
-    asciimsg = content.encode('ascii', errors='ignore').decode()
+    asciimsg: str = content.encode('ascii', errors='ignore').decode()
     if "@everyone" in asciimsg or "@here" in asciimsg:
         content = content.replace("@", "@​")
 
     return content
 
 
-def flag_parser(args, flags=[]):
+def flag_parser(args: str, flags: list[str] = []) -> tuple[dict[str, str], str]:
     """
     Parses flags in args from the flags given in flags.
     Flag formats:
         'a': boolean flag, checks if present.
-        'a=': Eats one "word"
-        'a==': Eats all words up until next flag
+        'a=': Eats one "word".
+        'a==': Eats all words up until next flag.
     Returns a tuple (flag_values, remaining).
     flags_present is a dictionary {flag: value} with value being:
-        False if a flag isn't present,
-        True if a boolean flag is present,
-        The value of the flag for a long flag,
+        False if a flag isn't present.
+        True if a boolean flag is present.
+        The value of the flag for a long flag.
     If -- is present in the input as a word, all flags afterwards are ignored.
-    TODO: Make this more efficient
+    TODO: Make this more efficient, then typehint it properly.
     """
     # Split across whitespace, keeping the whitespace
-    params = re.split(r'(\S+)', args)
-
-    final_params = []  # Final list of command parameters, excluding flags and flag arguments
-    final_flags = {}  # Dictionary of flags and flag values
-    indexes = []  # Indices in the params list where the flags appear
-    end_params = []  # The tail of the parameter list, after -- appears
+    params: list[str] = re.split(r'(\S+)', args)
+    # Final list of command parameters, excluding flags and flag arguments
+    final_params: list[str] = []
+    # Dictionary of flags and flag values
+    final_flags: dict[str, str] = {}
+    # Indices in the params list where the flags appear
+    indices: list[int] = []
+    # The tail of the parameter list, after -- appears
+    end_params: list[str] = [] 
 
     # Handle appearence of the flag terminator
     if "--" in params:
@@ -89,23 +89,23 @@ def flag_parser(args, flags=[]):
         else:
             final_flags[clean_flag] = False
             continue
-        indexes.append((index, flag))
+        indices.append((index, flag))
 
-    # Sort the indicies to ensure we step through the flags in order of appearance
-    indexes = sorted(indexes)
+    # Sort the indices to ensure we step through the flags in order of appearance
+    indices = sorted(indices)
 
     # Add any parameters that appear before the first flag
-    if len(indexes) > 0:
-        final_params = params[0:indexes[0][0]]
+    if len(indices) > 0:
+        final_params = params[0:indices[0][0]]
     else:
         final_params = params
 
     # Build the parameters and flag arguments
-    for (i, (index, flag)) in enumerate(indexes):
+    for (i, (index, flag)) in enumerate(indices):
         # Get the parameters between this flag and the next, or the end
         if len(params) > index + 1:
-            if len(indexes) > i + 1:
-                flag_params = params[index + 1:indexes[i + 1][0]]
+            if len(indices) > i + 1:
+                flag_params = params[index + 1:indices[i + 1][0]]
             else:
                 flag_params = params[index + 1:]
         else:
