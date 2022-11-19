@@ -132,12 +132,12 @@ class cmdClient(discord.Client):
         await self.launch_modules()
 
         ready_str = (
-            f"Logged in as {self.user}\n"
-            f"User id {self.user.id}\n"
-            f"Logged in to {len(self.guilds)} guilds\n"
+            f"Logged in as {self.user}""\n"
+            f"User id {self.user.id}""\n"
+            f"Logged in to {len(self.guilds)} guilds""\n"
             "------------------------------\n"
-            f"Default prefix is '{self.prefix}'\n"
-            f"Loaded {len(self.cmds)} commands\n"
+            f"Default prefix is '{self.prefix}'""\n"
+            f"Loaded {len(self.cmds)} commands""\n"
             "------------------------------\n"
             "Ready to take commands!\n"
         )
@@ -150,7 +150,7 @@ class cmdClient(discord.Client):
         Log the exception with a traceback, and continue on.
         """
         log(
-            f"Ignoring exception in {event_method}\n{traceback.format_exc()}",
+            f"Ignoring exception in {event_method}""\n"f"{traceback.format_exc()}",
             level=logging.ERROR
         )
 
@@ -256,7 +256,7 @@ class cmdClient(discord.Client):
             f"Executing command '{cmdname}' from module '{cmd.module.name}' "
             f"from user '{message.author}' (uid:{message.author.id}) "
             f"in guild '{message.guild}' (gid:{message.guild.id if message.guild else None}) "
-            f"in channel '{message.channel}' (cid:{message.channel.id}).\n"
+            f"in channel '{message.channel}' (cid:{message.channel.id})"".""\n"
             "{}".format('\n'.join(('\t' + line for line in message.content.splitlines()))),
             context=f"mid:{message.id}"
         )
@@ -264,7 +264,7 @@ class cmdClient(discord.Client):
         if not cmd.module.enabled:
             log(
                 "Skipping command due to disabled module.",
-                context="mid:{message.id}"
+                context=f"mid:{message.id}"
             )
             
             self.update_cmdnames()
@@ -287,8 +287,8 @@ class cmdClient(discord.Client):
             await cmd.run(ctx)
         except Exception:
             log(
-                f"The following exception was encountered executing command '{cmdname}'.\n{traceback.format_exc()}",
-                context="mid:{message.id}",
+                f"The following exception was encountered executing command '{cmdname}'.""\n"f"{traceback.format_exc()}",
+                context=f"mid:{message.id}",
                 level=logging.ERROR
             )
         finally:
@@ -341,13 +341,13 @@ class cmdClient(discord.Client):
                     f"Exception encountered executing parser '{func.__name__}' for a message "
                     f"from user '{message.author}' (uid:{message.author.id}) "
                     f"in guild '{message.guild}' (gid:{message.guild.id if message.guild else None}) "
-                    f"in channel '{message.channel}' (cid:{message.channel.id}).\n"
+                    f"in channel '{message.channel}' (cid:{message.channel.id}).""\n"
                     "Traceback:\n{traceback}\n"
                     "Content:\n{content}".format(
                         content='\n'.join(('\t' + line for line in message.content.splitlines())),
                         traceback='\n'.join(('\t' + line for line in traceback.format_exc().splitlines()))
                     ),
-                    context="mid:{message.id}",
+                    context=f"mid:{message.id}",
                     level=logging.ERROR
                 )
 
@@ -356,7 +356,7 @@ class cmdClient(discord.Client):
             (new_func, priority)
         )
 
-        log(f"Adding message parser \"{func.__name__}\" with priority \"{priority}\"")
+        log(f"Adding message parser '{func.__name__}' with priority '{priority}'")
 
     def add_after_event(self, event: str, func: Optional[Callable] = None, priority: int = 0) -> Optional[Callable]:
         """
@@ -379,8 +379,8 @@ class cmdClient(discord.Client):
                     await func(*args, **kwargs)
                 except Exception:
                     log(
-                        "Exception encountered executing event handler '{func.__name__}' for event '{event}'. "
-                        "Traceback:\n{traceback.format_exc()}",
+                        f"Exception encountered executing event handler '{func.__name__}' for event '{event}'. "
+                        "Traceback:\n"f"{traceback.format_exc()}",
                         level=logging.ERROR
                     )
 
@@ -392,7 +392,7 @@ class cmdClient(discord.Client):
             handlers: list[tuple[Callable, int]] = getattr(self, after_handler)
             handlers.insert(bisect([handler[1] for handler in handlers], priority), (new_func, priority))
             
-            log(f"Adding after_event handler \"{func.__name__}\" for event \"{event}\" with priority \"{priority}\"")
+            log(f"Adding after_event handler '{func.__name__}' for event '{event}' with priority '{priority}'")
 
         if func is None:
             return wrapper

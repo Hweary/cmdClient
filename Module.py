@@ -110,7 +110,7 @@ class Module:
             log("Running launch tasks.", context=self.name)
 
             for task in self.launch_tasks:
-                log("Running launch task '{}'.".format(task.__name__), context=self.name)
+                log(f"Running launch task '{task.__name__}'.", context=self.name)
                 await task(client)
 
             self.ready = True

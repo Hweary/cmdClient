@@ -99,14 +99,14 @@ class Command:
             only_error: str = "".join(traceback.TracebackException.from_exception(e).format_exception_only())
 
             log(
-                f"Caught the following exception while running command:\n{full_traceback}",
+                "Caught the following exception while running command:\n{}".format(full_traceback),
                 context=f"mid:{ctx.msg.id}",
                 level=logging.ERROR
             )
 
             await ctx.reply(
                 "An unexpected internal error occurred while running your command! "
-                f"Please report the following error to the developer:\n`{only_error}`"
+                "Please report the following error to the developer:\n`{}`".format(only_error)
             )
         else:
             log(
