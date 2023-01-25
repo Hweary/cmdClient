@@ -251,13 +251,14 @@ class cmdClient(discord.Client):
             Prefix used in invoking command.
         """
         cmd: Command = self.cmd_names[cmdname]
+        content: str = "\n".join(("\t" + line for line in message.content.splitlines()))
 
         log(
             f"Executing command '{cmdname}' from module '{cmd.module.name}' "
             f"from user '{message.author}' (uid:{message.author.id}) "
             f"in guild '{message.guild}' (gid:{message.guild.id if message.guild else None}) "
             f"in channel '{message.channel}' (cid:{message.channel.id})"".""\n"
-            "{}".format('\n'.join(('\t' + line for line in message.content.splitlines()))),
+            f"{content}",
             context=f"mid:{message.id}"
         )
 
